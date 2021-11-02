@@ -30,7 +30,7 @@
           <span v-else class="legend--empty"> Список пуст </span>
         </div>
         <div class="legend__chart">
-          <!-- chart -->
+          <Doughnut ref="chart" />
         </div>
       </div>
       <div v-else class="profile">
@@ -46,6 +46,7 @@
 import LegendItem from "./SideMenu/LegendItem.vue";
 import PersonCard from "./SideMenu/PersonCard.vue";
 import legend from "@/assets/data/legend.json";
+import { Doughnut } from "vue-chartjs";
 
 export default {
   props: {
@@ -61,6 +62,7 @@ export default {
   components: {
     LegendItem,
     PersonCard,
+    Doughnut,
   },
   data() {
     return {
@@ -70,12 +72,30 @@ export default {
   created() {
     this.loadLegend();
   },
+  mounted() {
+    this.makeChart();
+  },
   methods: {
     loadLegend() {
       this.legend = legend;
     },
     closeProfile() {
       this.$emit("update:isUserOpenned", false);
+    },
+    makeChart() {
+      const chartData = {
+        labels: this.legend.map((legendItem) => legendItem.text),
+        datasets: [
+          {
+            label: "Легенда",
+            backgroundColor: this.legend.map((legendItem) => legendItem.color),
+            data: this.legend.map((legendItem) => legendItem.counter),
+          },
+        ],
+      };
+      const options = {};
+
+      this.$refs.chart.renderChart(chartData, options);
     },
   },
 };
