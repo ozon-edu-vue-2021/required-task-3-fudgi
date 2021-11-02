@@ -16,20 +16,22 @@
     </div>
     <div class="content">
       <div v-if="!isUserOpenned" class="legend">
-        <div class="legend__data">
+        <div class="legend_data">
           <div v-if="legend.length > 0" class="legend__items">
-            <LegendItem
-              v-for="(item, index) in legend"
-              :key="index"
-              :color="item.color"
-              :text="item.text"
-              :counter="item.counter"
-              class="legend__item"
-            />
+            <draggable v-model="legend" @start="dragStart" @end="dragEnd">
+              <LegendItem
+                v-for="(item, index) in legend"
+                :key="index"
+                :color="item.color"
+                :text="item.text"
+                :counter="item.counter"
+                class="legend__item"
+              />
+            </draggable>
           </div>
           <span v-else class="legend--empty"> Список пуст </span>
         </div>
-        <div class="legend__chart">
+        <div :class="chartClasses">
           <Doughnut ref="chart" />
         </div>
       </div>
@@ -43,10 +45,11 @@
 </template>
 
 <script>
+import { Doughnut } from "vue-chartjs";
+import draggable from "vuedraggable";
 import LegendItem from "./SideMenu/LegendItem.vue";
 import PersonCard from "./SideMenu/PersonCard.vue";
 import legend from "@/assets/data/legend.json";
-import { Doughnut } from "vue-chartjs";
 
 export default {
   props: {
@@ -63,10 +66,12 @@ export default {
     LegendItem,
     PersonCard,
     Doughnut,
+    draggable,
   },
   data() {
     return {
       legend: [],
+      drag: false,
     };
   },
   created() {
@@ -96,6 +101,18 @@ export default {
       const options = {};
 
       this.$refs.chart.renderChart(chartData, options);
+    },
+    dragEnd() {
+      this.drag = false;
+      this.makeChart();
+    },
+    dragStart() {
+      this.drag = true;
+    },
+  },
+  computed: {
+    chartClasses() {
+      return ["legend__chart", { legend__chart_disabled: this.drag }];
     },
   },
 };
@@ -181,6 +198,12 @@ h3 {
 }
 
 .content .legend .legend__items .legend__item.sortable-chosen {
+  opacity: 0.7;
+  border: 1px dashed grey;
+  border-radius: 5px;
+}
+
+.content .legend .legend__items .legend__item.sortable-chosen {
   opacity: 25%;
 }
 
@@ -192,5 +215,14 @@ h3 {
 
 .profile {
   padding-top: 20px;
+}
+
+.legend__chart {
+  transition: opacity 0.3s;
+}
+
+.legend__chart_disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 </style>
