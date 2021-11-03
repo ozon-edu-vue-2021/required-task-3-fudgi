@@ -2,11 +2,11 @@
   <div class="map" @click="clickHandler">
     <h3>Карта офиса</h3>
 
-    <div v-if="!isLoading" class="map-root">
+    <div v-show="!isLoading" class="map-root">
       <MapSVG ref="svg" />
-      <TableSVG v-show="false" ref="table" />
     </div>
-    <div v-else>Loading...</div>
+    <div v-if="isLoading">Loading...</div>
+    <TableSVG v-show="false" ref="table" />
   </div>
 </template>
 
@@ -16,6 +16,7 @@ import MapSVG from "@/assets/images/map.svg";
 import TableSVG from "@/assets/images/workPlace.svg";
 import tables from "@/assets/data/tables.json";
 import legend from "@/assets/data/legend.json";
+import checkIdSet from "../utils/checkIdSet";
 
 export default {
   components: {
@@ -24,7 +25,7 @@ export default {
   },
   data() {
     return {
-      isLoading: false,
+      isLoading: true,
       svg: null,
       g: null,
       tables: [],
@@ -41,16 +42,17 @@ export default {
     this.svg = d3.select(this.$refs.svg);
     this.g = this.svg.select("g");
     this.tableSVG = d3.select(this.$refs.table);
-
     this.tables = tables;
 
     if (this.g) {
       this.drawTables();
+      this.isLoading = false;
     } else console.log("ERROR");
   },
   methods: {
     drawTables() {
       const svgTablesGroup = this.g.append("g").classed("groupPlaced", true);
+
       this.tables.map(({ _id, x, y, rotate, group_id }) => {
         const transformStyle = `translate(${x}, ${y}) scale(0.5) rotate(${
           rotate || 0
@@ -67,15 +69,15 @@ export default {
       });
     },
     clickHandler(e) {
-      const id = e.target.closest("[data-id]")?.dataset?.id;
-      this.$emit("selectPlace", id);
+      const id = Number(e.target.closest("[data-id]")?.dataset?.id);
+      this.$emit("selectPlace", Number.isNaN(id) ? null : id);
     },
   },
   watch: {
-    selected: function (newVal) {
+    selected: function (id) {
       this.g.select(".selected-place").classed("selected-place", false);
-      if (newVal)
-        this.g.select(`[data-id='${newVal}']`).classed("selected-place", true);
+      if (!checkIdSet(id))
+        this.g.select(`[data-id='${id}']`).classed("selected-place", true);
     },
   },
 };

@@ -15,6 +15,7 @@
 import Map from "./components/Map.vue";
 import SideMenu from "./components/SideMenu.vue";
 import people from "@/assets/data/people.json";
+import checkIdSet from "./utils/checkIdSet";
 
 export default {
   name: "App",
@@ -24,24 +25,24 @@ export default {
   },
   data() {
     return {
-      selectedWorkPlace: NaN,
+      selectedWorkPlace: null,
     };
   },
   methods: {
     handleWorkPlaceSelect(id) {
-      this.selectedWorkPlace = Number(id);
+      this.selectedWorkPlace = id;
     },
   },
   computed: {
     selectedPerson() {
-      if (Number.isNaN(this.selectedWorkPlace)) return;
+      if (checkIdSet(this.selectedWorkPlace)) return;
       const personData = people.find(
         (item) => item.tableId === this.selectedWorkPlace
       );
       return personData;
     },
     isUserOpenned() {
-      return !Number.isNaN(this.selectedWorkPlace);
+      return !checkIdSet(this.selectedWorkPlace);
     },
   },
 };
