@@ -80,7 +80,7 @@ h3 {
   border-radius: 6px;
   border: 1px solid #ccd8e4;
   height: 100%;
-  background: #e1e1e1;
+  background: #f3f3f3;
   max-width: 1500px;
   margin: 0 auto;
 }

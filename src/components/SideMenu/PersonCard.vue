@@ -42,6 +42,7 @@ export default {
   height: 50px;
   width: 50px;
   border-radius: 50%;
+  object-fit: cover;
 }
 
 .person__info {
