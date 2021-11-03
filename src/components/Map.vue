@@ -1,5 +1,5 @@
 <template>
-  <div class="map">
+  <div class="map" @click="clickHandler">
     <h3>Карта офиса</h3>
 
     <div v-if="!isLoading" class="map-root">
@@ -31,6 +31,12 @@ export default {
       tableSVG: null,
     };
   },
+  props: {
+    selected: {
+      type: Number,
+      default: () => NaN,
+    },
+  },
   mounted() {
     this.svg = d3.select(this.$refs.svg);
     this.g = this.svg.select("g");
@@ -45,23 +51,31 @@ export default {
   methods: {
     drawTables() {
       const svgTablesGroup = this.g.append("g").classed("groupPlaced", true);
-      this.tables.map((table) => {
-        const svgTable = svgTablesGroup
-          .append("g")
-          .attr("transform", `translate(${table.x}, ${table.y}) scale(0.5)`)
-          .attr("id", table._id)
-          .classed("employer-place", true);
+      this.tables.map(({ _id, x, y, rotate, group_id }) => {
+        const transformStyle = `translate(${x}, ${y}) scale(0.5) rotate(${
+          rotate || 0
+        })`;
+        const fillColor =
+          legend.find((it) => it.group_id === group_id)?.color ?? "transparent";
 
-        svgTable
+        svgTablesGroup
           .append("g")
-          .attr("transform", `rotate(${table.rotate || 0})`)
+          .attr("transform", transformStyle)
+          .attr("data-id", _id)
           .html(this.tableSVG.html())
-          .attr(
-            "fill",
-            legend.find((it) => it.group_id === table.group_id)?.color ??
-              "transparent"
-          );
+          .attr("fill", fillColor);
       });
+    },
+    clickHandler(e) {
+      const id = e.target.closest("[data-id]")?.dataset?.id;
+      this.$emit("selectPlace", id);
+    },
+  },
+  watch: {
+    selected: function (newVal) {
+      this.g.select(".selected-place").classed("selected-place", false);
+      if (newVal)
+        this.g.select(`[data-id='${newVal}']`).classed("selected-place", true);
     },
   },
 };
@@ -96,5 +110,11 @@ h3 {
 
 ::v-deep .table {
   cursor: pointer;
+}
+</style>
+
+<style>
+.selected-place {
+  filter: drop-shadow(0px 0px 3px #677eff);
 }
 </style>
