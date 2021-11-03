@@ -4,7 +4,7 @@
       <Map :selected="selectedWorkPlace" @click="handleWorkPlaceSelect" />
       <SideMenu
         :person="selectedPerson"
-        :isUserOpenned="isUserOpenned(selectedWorkPlace)"
+        :isUserOpenned="isUserOpenned"
         @update="handleWorkPlaceSelect"
       />
     </div>
@@ -31,9 +31,6 @@ export default {
     handleWorkPlaceSelect(id) {
       this.selectedWorkPlace = Number(id);
     },
-    isUserOpenned(selected) {
-      return !Number.isNaN(selected);
-    },
   },
   computed: {
     selectedPerson() {
@@ -42,6 +39,9 @@ export default {
         (item) => item.tableId === this.selectedWorkPlace
       );
       return personData;
+    },
+    isUserOpenned() {
+      return !Number.isNaN(this.selectedWorkPlace);
     },
   },
 };
