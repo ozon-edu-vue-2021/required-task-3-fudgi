@@ -1,8 +1,12 @@
 <template>
   <div id="app">
     <div class="office">
-      <Map />
-      <SideMenu />
+      <Map :selected="selectedWorkPlace" @click="handleWorkPlaceSelect" />
+      <SideMenu
+        :person="selectedPerson"
+        :isUserOpenned="isUserOpenned(selectedWorkPlace)"
+        @update="handleWorkPlaceSelect"
+      />
     </div>
   </div>
 </template>
@@ -10,12 +14,35 @@
 <script>
 import Map from "./components/Map.vue";
 import SideMenu from "./components/SideMenu.vue";
+import people from "@/assets/data/people.json";
 
 export default {
   name: "App",
   components: {
     Map,
     SideMenu,
+  },
+  data() {
+    return {
+      selectedWorkPlace: NaN,
+    };
+  },
+  methods: {
+    handleWorkPlaceSelect(id) {
+      this.selectedWorkPlace = Number(id);
+    },
+    isUserOpenned(selected) {
+      return !Number.isNaN(selected);
+    },
+  },
+  computed: {
+    selectedPerson() {
+      if (Number.isNaN(this.selectedWorkPlace)) return;
+      const personData = people.find(
+        (item) => item.tableId === this.selectedWorkPlace
+      );
+      return personData;
+    },
   },
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="map">
+  <div class="map" @click="clickHandler">
     <h3>Карта офиса</h3>
 
     <div v-if="!isLoading" class="map-root">
@@ -31,6 +31,12 @@ export default {
       tableSVG: null,
     };
   },
+  props: {
+    selected: {
+      type: Number,
+      default: () => NaN,
+    },
+  },
   mounted() {
     this.svg = d3.select(this.$refs.svg);
     this.g = this.svg.select("g");
@@ -49,7 +55,8 @@ export default {
         const svgTable = svgTablesGroup
           .append("g")
           .attr("transform", `translate(${table.x}, ${table.y}) scale(0.5)`)
-          .attr("id", table._id)
+          .attr("data-id", table._id)
+          .attr("id", "d" + table._id)
           .classed("employer-place", true);
 
         svgTable
@@ -62,6 +69,19 @@ export default {
               "transparent"
           );
       });
+    },
+    clickHandler(e) {
+      const id = e.target.closest("[data-id]")?.dataset?.id;
+      this.$emit("click", id);
+    },
+  },
+  watch: {
+    selected: function (newVal) {
+      this.g
+        .select(".employer-place_selected")
+        .classed("employer-place_selected", false);
+      if (newVal)
+        this.g.select(`#d${newVal}`).classed("employer-place_selected", true);
     },
   },
 };
@@ -96,5 +116,14 @@ h3 {
 
 ::v-deep .table {
   cursor: pointer;
+}
+.employer-place {
+  filter: drop-shadow(0px 0px 3px #677eff);
+}
+</style>
+
+<style>
+.employer-place_selected {
+  filter: drop-shadow(0px 0px 3px #677eff);
 }
 </style>

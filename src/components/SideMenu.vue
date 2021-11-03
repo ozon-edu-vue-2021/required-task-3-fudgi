@@ -85,7 +85,7 @@ export default {
       this.legend = legend;
     },
     closeProfile() {
-      this.$emit("update:isUserOpenned", false);
+      this.$emit("update");
     },
     makeChart() {
       const chartData = {
