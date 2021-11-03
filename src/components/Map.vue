@@ -68,7 +68,7 @@ export default {
     },
     clickHandler(e) {
       const id = e.target.closest("[data-id]")?.dataset?.id;
-      this.$emit("click", id);
+      this.$emit("selectPlace", id);
     },
   },
   watch: {

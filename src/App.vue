@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="office">
-      <Map :selected="selectedWorkPlace" @click="handleWorkPlaceSelect" />
+      <Map :selected="selectedWorkPlace" @selectPlace="handleWorkPlaceSelect" />
       <SideMenu
         :person="selectedPerson"
         :isUserOpenned="isUserOpenned"
