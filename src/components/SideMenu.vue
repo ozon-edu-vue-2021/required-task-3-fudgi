@@ -85,7 +85,7 @@ export default {
       this.legend = legend;
     },
     closeProfile() {
-      this.$emit("update", null);
+      this.$emit("update");
     },
     makeChart() {
       const chartData = {

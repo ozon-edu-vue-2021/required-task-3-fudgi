@@ -30,7 +30,7 @@ export default {
   },
   methods: {
     handleWorkPlaceSelect(id) {
-      this.selectedWorkPlace = id;
+      this.selectedWorkPlace = id ?? null;
     },
   },
   computed: {
